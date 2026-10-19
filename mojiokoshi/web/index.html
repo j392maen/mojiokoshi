@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>mojiokoshi</title>
+  <link rel="preload" href="fonts/instrument-serif-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/instrument-serif-latin-400-italic.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/geist-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="fonts/shippori-mincho.css">
+  <link rel="stylesheet" href="app.css">
+</head>
+<body data-view="idle" data-drag="false">
+  <canvas class="field" id="field" aria-hidden="true"></canvas>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="marks" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <header class="bar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 28 16" aria-hidden="true">
+        <path d="M1 8v0M4.5 5v6M8 2v12M11.5 6v4M15 8h12" />
+      </svg>
+      <span class="brand-word">mojiokoshi</span>
+      <span class="brand-jp">文字起こし</span>
+    </div>
+    <p class="engine" id="engine" data-state="idle" aria-live="polite">
+      <span class="led" aria-hidden="true"></span>
+      <span id="engine-text">エンジンを準備しています</span>
+    </p>
+    <button class="btn" id="browse" type="button">
+      <span class="btn-label">ファイルを選ぶ</span>
+      <kbd>Ctrl O</kbd>
+    </button>
+  </header>
+
+  <main class="main">
+    <!-- Idle ------------------------------------------------------------------>
+    <section class="idle" aria-labelledby="headline">
+      <p class="eyebrow"><span class="num">01</span>Speech to text, on this machine</p>
+      <div class="hero">
+        <h1 class="headline" id="headline">
+          <span class="row"><span class="in">Drop sound,</span></span>
+          <span class="row"><span class="in">keep <em>words.</em></span></span>
+        </h1>
+        <p class="headline release" aria-hidden="true">
+          <span class="row"><span class="in"><em>Release.</em></span></span>
+        </p>
+      </div>
+      <div class="lede">
+        <p>音声や動画を、この窓へ。<br>同じフォルダに、同じ名前で、<br>テキストが残ります。</p>
+        <p class="example"><span>lecture.mp4</span><span class="arrow">→</span><span>lecture.txt</span></p>
+      </div>
+      <p class="tate" aria-hidden="true">声を、文字に。</p>
+    </section>
+
+    <!-- Work ------------------------------------------------------------------>
+    <section class="work" aria-label="文字起こし">
+      <aside class="queue" aria-label="キュー">
+        <header class="queue-head">
+          <span class="label">Queue</span>
+          <span class="count" id="queue-count">00</span>
+          <button class="link" id="clear" type="button">完了を消去</button>
+        </header>
+        <ol class="queue-list" id="queue-list"></ol>
+        <p class="queue-hint">ドロップで追加できます</p>
+      </aside>
+
+      <article class="stage" id="stage" data-status="queued">
+        <div class="stage-top">
+          <p class="eyebrow"><span class="num" id="stage-num">01</span><span id="stage-status">Waiting</span></p>
+          <div class="titleblock">
+            <h2 class="title" id="stage-title"></h2>
+            <div class="percent" id="percent" aria-live="off">
+              <span class="pct-num" id="pct">0</span><span class="pct-sym">%</span>
+              <svg class="check" viewBox="0 0 64 64" aria-hidden="true"><path d="M14 33 l12 12 L50 20" /></svg>
+              <svg class="cross" viewBox="0 0 64 64" aria-hidden="true"><path d="M20 20 L44 44 M44 20 L20 44" /></svg>
+            </div>
+          </div>
+          <dl class="meta">
+            <div><dt>Duration</dt><dd id="m-duration">—</dd></div>
+            <div><dt>Language</dt><dd id="m-language">—</dd></div>
+            <div><dt>Engine</dt><dd id="m-engine">—</dd></div>
+            <div><dt>Speed</dt><dd id="m-speed">—</dd></div>
+            <div class="wide"><dt>Output</dt><dd id="m-output">—</dd></div>
+          </dl>
+        </div>
+
+        <div class="reel" id="reel" tabindex="-1">
+          <div class="reel-inner" id="reel-inner"></div>
+          <p class="reel-empty" id="reel-empty"></p>
+        </div>
+
+        <div class="scope" id="scope">
+          <div class="scope-axis">
+            <span id="tc-now">00:00</span>
+            <span class="tc-mid" id="tc-mid"></span>
+            <span id="tc-total">00:00</span>
+          </div>
+          <canvas class="wave" id="wave"></canvas>
+          <div class="tip" id="tip" role="tooltip"><span class="tip-tc"></span><span class="tip-text"></span></div>
+        </div>
+
+        <div class="actions" id="actions">
+          <button class="btn solid" id="open-text" type="button"><span class="btn-label">テキストを開く</span></button>
+          <button class="btn" id="reveal" type="button"><span class="btn-label">フォルダで表示</span></button>
+          <button class="btn" id="copy" type="button"><span class="btn-label">コピー</span></button>
+          <button class="btn ghost" id="cancel" type="button"><span class="btn-label">キャンセル</span></button>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p id="formats"><span class="fmt-group">Video</span> MP4 MOV MKV WEBM AVI M4V&emsp;<span class="fmt-group">Audio</span> WAV MP3 M4A AAC FLAC OGG OPUS WMA</p>
+    <p class="foot-end">Local · Private · Offline</p>
+  </footer>
+
+  <div class="dragtag" id="dragtag" aria-hidden="true"><span class="dragtag-dot"></span><span>文字起こしする</span></div>
+  <div class="veil" aria-hidden="true"><p class="veil-text"><em>Add to queue.</em></p></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <dialog class="dialog" id="quit">
+    <p class="dialog-title">文字起こしの途中です。</p>
+    <p class="dialog-body">いま終了すると、処理中のファイルのテキストは書き出されません。</p>
+    <div class="dialog-actions">
+      <button class="btn" value="stay" id="quit-stay" type="button"><span class="btn-label">続ける</span></button>
+      <button class="btn solid" value="quit" id="quit-go" type="button"><span class="btn-label">終了する</span></button>
+    </div>
+  </dialog>
+
+  <script src="field.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

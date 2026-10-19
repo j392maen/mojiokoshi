@@ -1,0 +1,8 @@
+faster-whisper>=1.2
+av>=14
+numpy>=1.26
+huggingface-hub>=0.24
+pywebview>=6.0
+# CUDA 12 runtime for CTranslate2 on Windows/Linux (ignored by the CPU fallback)
+nvidia-cublas-cu12; sys_platform != "darwin"
+nvidia-cudnn-cu12>=9,<10; sys_platform != "darwin"
